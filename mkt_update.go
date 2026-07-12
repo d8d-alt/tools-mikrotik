@@ -113,10 +113,5 @@ func main() {
 		log.Fatal("update not set: ", err)
 	}
 
-
-
-  
-
 	chkUpdate()
-
 }
