@@ -126,7 +126,7 @@ func bckCopy(sPath, dPath string) {
 func main() {
 
 	if len(os.Args) != 5 {
-		log.Fatal("Error! Expected 5 arguments only! Exam:  ./backup -ip=192.168.253.1 -port=22 -user=username -pass=password")
+		log.Fatal("Error! Expected 4 arguments only! Exam:  ./backup -ip=192.168.253.1 -port=22 -user=username -pass=password")
 	}
 
 	var err error
