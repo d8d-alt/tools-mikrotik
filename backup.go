@@ -75,7 +75,7 @@ func backupConf(datetime, name string) (fileTo string) {
 	}
 
 	defer session.Close()
-	fmt.Printf("%v\n", string(bckpOut))
+	fmt.Printf("%v", string(bckpOut))
 	return fileTo
 }
 
@@ -83,13 +83,12 @@ func exportConf(datetime, name string) (fileTo string) {
 	session := conSSHserv()
 	fileTo = name + "_" + datetime + ".backup"
 
-	xout, err := session.Output("/export file=" + fileTo + " compact")
+	_, err := session.Output("/export file=" + fileTo + " compact")
 	if err != nil {
 		log.Fatal("Failed to execute cmd fot Output... " + err.Error())
 	}
-
 	defer session.Close()
-	fmt.Printf("%v\n", string(xout))
+
 	return fileTo
 }
 
