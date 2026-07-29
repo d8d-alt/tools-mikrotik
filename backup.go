@@ -153,7 +153,7 @@ func main() {
 
 	for _, file := range files {
 		bckCopy(file, file)
-		fmt.Printf("File : %s has been copied locally", file)
+		fmt.Printf("File : %s has been copied locally\n", file)
 	}
 
 }
