@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"golang.org/x/crypto/ssh"
@@ -57,7 +58,7 @@ func stUpdate() {
 
 }
 
-func chkUpdate() {
+func chkUpdate(update *bool) {
 	session := conSSHserv()
 	xout, err := session.Output("/system/package/update/check-for-updates")
 	if err != nil {
@@ -67,33 +68,40 @@ func chkUpdate() {
 	defer session.Close()
 
 	if strings.Contains(string(xout), "status: New version is available") {
-		var shCurr string
 		var shNew string
+		var shCurr string
 		for line := range strings.Lines(string(xout)) {
 			if strings.Contains(line, "installed-version:") {
 				_, shCurr, _ = strings.Cut(line, "installed-version: ")
 				shCurr = strings.Trim(shCurr, "\r\n ")
 			}
+
 			if strings.Contains(line, "latest-version:") {
 				_, shNew, _ = strings.Cut(line, " latest-version: ")
 				shNew = strings.Trim(shNew, "\r\n ")
+
 			}
 		}
 
-		fmt.Println("There is a new mikrotik firmware ver." + shNew + " for update, going to update it from present installed ver." + shCurr + "... ")
-		stUpdate()
+		if *update == false {
+			fmt.Println("There is a new mikrotik firmware ver." + shNew + " and present installed is ver." + shCurr + ", please use -update=true to update it ... ")
+		} else if *update == true {
+			fmt.Println("Updating mikrotik firmware to ver." + shNew + " from present installed ver." + shCurr + "... ")
+			stUpdate()
+		}
 	}
 
 	if !strings.Contains(string(xout), "status: New version is available") {
 		fmt.Println("There is no new mikrotik firmware version for update... ")
+
 	}
 
 }
 
 func main() {
 
-  	if len(os.Args) != 6 {
-		log.Fatal("Error! Expected 5 arguments only! Exam:  ./mkt_update -ip=192.168.253.1 -port=22 -user=username -pass=password -update=true ")
+	if len(os.Args) < 5 {
+		log.Fatal("Error! Expected at leaset 4 arguments! Exam:  ./mkt_update -ip=192.168.253.1 -port=22 -user=username -pass=password -update=true ")
 	}
 
 	var err error
@@ -109,9 +117,9 @@ func main() {
 	if passWord == nil {
 		log.Fatal("pass not set: ", err)
 	}
-  if update == nil {
+	if update == nil {
 		log.Fatal("update not set: ", err)
 	}
 
-	chkUpdate()
+	chkUpdate(update)
 }
