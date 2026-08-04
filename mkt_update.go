@@ -42,7 +42,6 @@ func conSSHserv() (session *ssh.Session) {
 	}
 
 	return session
-
 }
 
 func stUpdate() {
@@ -55,7 +54,6 @@ func stUpdate() {
 	}
 
 	defer session.Close()
-
 }
 
 func chkUpdate(update *bool) {
@@ -79,7 +77,6 @@ func chkUpdate(update *bool) {
 			if strings.Contains(line, "latest-version:") {
 				_, shNew, _ = strings.Cut(line, " latest-version: ")
 				shNew = strings.Trim(shNew, "\r\n ")
-
 			}
 		}
 
@@ -93,7 +90,6 @@ func chkUpdate(update *bool) {
 
 	if !strings.Contains(string(xout), "status: New version is available") {
 		fmt.Println("There is no new mikrotik firmware version for update... ")
-
 	}
 
 }
