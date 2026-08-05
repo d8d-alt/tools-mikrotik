@@ -96,8 +96,10 @@ func chkUpdate(update *bool) {
 
 func main() {
 
+	_, fpName, _, _ := runtime.Caller(0)
+	
 	if len(os.Args) < 5 {
-		log.Fatal("Error! Expected at leaset 4 arguments! Exam:  ./mkt_update -ip=192.168.253.1 -port=22 -user=username -pass=password -update=true ")
+		log.Fatal("Error! Expected at leaset 4 arguments! Exam: " + filepath.Base(fpName) + " -ip=192.168.253.1 -port=22 -user=username -pass=password -update=true ")
 	}
 
 	var err error
