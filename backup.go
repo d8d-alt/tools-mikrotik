@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"path/filepath"
 
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
