@@ -71,13 +71,11 @@ func chkUpdate(update *bool) {
 		var shCurr string
 		for line := range strings.Lines(string(xout)) {
 			if strings.Contains(line, "installed-version:") {
-				_, shCurr, _ = strings.Cut(line, "installed-version: ")
-				shCurr = strings.Trim(shCurr, "\r\n ")
+				shCurr = strings.Trim(strings.Join(strings.Split(line, "installed-version:"), ""), " \n\r")
 			}
 
 			if strings.Contains(line, "latest-version:") {
-				_, shNew, _ = strings.Cut(line, " latest-version: ")
-				shNew = strings.Trim(shNew, "\r\n ")
+				shNew = strings.Trim(strings.Join(strings.Split(line, "latest-version:"), ""), " \n\r")
 			}
 		}
 
