@@ -59,8 +59,7 @@ func mktGetName() (mktName string) {
 	}
 
 	defer session.Close()
-	gNameZ := string(gName)
-	gNameZ = strings.Trim(strings.Join(strings.Split(gNameZ, "name:"), ""), " \n\r")
+	gNameZ := strings.Trim(strings.Join(strings.Split(string(gName), "name:"), ""), " \n\r")
 	return gNameZ
 
 }
