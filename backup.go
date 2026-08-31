@@ -126,19 +126,11 @@ func main() {
 	}
 
 	var err error
-	if serverName == nil {
-		log.Fatal("ip not set: ", err)
-	}
-	if port == nil {
-		log.Fatal("port not set: ", err)
-	}
-	if userName == nil {
-		log.Fatal("user not set: ", err)
-	}
-	if passWord == nil {
-		log.Fatal("pass not set: ", err)
-	}
 
+	if *serverName == "" || *port == "" || *userName == "" || *passWord == "" {
+    log.Fatal("Error! All flags required: -ip, -port, -user, -pass")
+}
+	
 	datetime := time.Now().Format("2006-01-02_150405")
 	mktNm := mktGetName()
 
