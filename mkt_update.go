@@ -148,6 +148,7 @@ func chkUpdate(update *bool) {
 
 func main() {
 
+	flag.Parse()
 	if *serverName == "" || *port == "" || *userName == "" || *passWord == "" {
 		log.Fatalf("usage: %s -ip=<ip> -port=<port> -user=<user> -pass=<pass> [-update=true]\n", filepath.Base(os.Args[0]))
 	}
