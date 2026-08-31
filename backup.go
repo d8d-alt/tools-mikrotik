@@ -102,7 +102,6 @@ func bckCopy(sPath, dPath string) {
 	if err != nil {
 		log.Fatal("Failed to open remote sftp file... " + err.Error())
 	}
-	defer sFile.Close()
 
 	dFile, err := os.Create(dPath)
 	if err != nil {
