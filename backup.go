@@ -21,7 +21,6 @@ var (
 )
 
 func clientSSHserv() (client *ssh.Client) {
-	flag.Parse()
 
 	config := &ssh.ClientConfig{
 		User: *userName,
@@ -121,6 +120,7 @@ func bckCopy(sPath, dPath string) {
 }
 
 func main() {
+	flag.Parse()
 
 	if len(os.Args) != 5 {
 		log.Fatal("Error! Expected 4 arguments only! Exam: " + filepath.Base(os.Args[0]) + " -ip=192.168.253.1 -port=22 -user=username -pass=password")
