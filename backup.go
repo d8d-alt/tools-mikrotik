@@ -35,7 +35,7 @@ func clientSSHserv() (client *ssh.Client) {
 	if err != nil {
 		log.Fatal("Failed to dial: ", err)
 	}
-defer client.Close()
+
 	return client
 
 }
