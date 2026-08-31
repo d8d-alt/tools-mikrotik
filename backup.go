@@ -31,9 +31,8 @@ func clientSSHserv() (client *ssh.Client) {
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
-	sshHst := *serverName + ":" + *port
 	var err error
-	client, err = ssh.Dial("tcp", sshHst, config)
+	client, err = ssh.Dial("tcp", *serverName + ":" + *port, config)
 	if err != nil {
 		log.Fatal("Failed to dial: ", err)
 	}
