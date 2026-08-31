@@ -33,9 +33,8 @@ func conSSHserv() (session *ssh.Session) {
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
-	sshHst := *serverName + ":" + *port
 	var err error
-	client, err := ssh.Dial("tcp", sshHst, config)
+	client, err := ssh.Dial("tcp", *serverName + ":" + *port, config)
 	if err != nil {
 		log.Fatal("Failed to dial: ", err)
 	}
@@ -71,9 +70,8 @@ func stUpdate() {
 
 func cHkOnline() string {
 	flag.Parse()
-	sshHst := *serverName + ":" + *port
-	
-	conn, err := net.Dial("tcp", sshHst)
+
+	conn, err := net.Dial("tcp", *serverName + ":" + *port)
 	if err != nil {
 		log.Fatal("Conn error from cHkOnline... " + err.Error())
 	}
