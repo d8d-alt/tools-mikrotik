@@ -24,7 +24,6 @@ var (
 
 func conSSHserv() (session *ssh.Session) {
 
-	flag.Parse()
 	config := &ssh.ClientConfig{
 		User: *userName,
 		Auth: []ssh.AuthMethod{
@@ -69,7 +68,6 @@ func stUpdate() {
 }
 
 func cHkOnline() string {
-	flag.Parse()
 
 	conn, err := net.Dial("tcp", *serverName + ":" + *port)
 	if err != nil {
