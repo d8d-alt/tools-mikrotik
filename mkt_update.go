@@ -148,25 +148,8 @@ func chkUpdate(update *bool) {
 
 func main() {
 
-	if len(os.Args) < 5 {
-		log.Fatal("Error! Expected at leaset 4 arguments! Exam: " + filepath.Base(os.Args[0]) + " -ip=192.168.253.1 -port=22 -user=username -pass=password -update=true ")
-	}
-
-	var err error
-	if serverName == nil {
-		log.Fatal("ip not set: ", err)
-	}
-	if port == nil {
-		log.Fatal("port not set: ", err)
-	}
-	if userName == nil {
-		log.Fatal("user not set: ", err)
-	}
-	if passWord == nil {
-		log.Fatal("pass not set: ", err)
-	}
-	if update == nil {
-		log.Fatal("update not set: ", err)
+	if *serverName == "" || *port == "" || *userName == "" || *passWord == "" {
+		log.Fatalf("usage: %s -ip=<ip> -port=<port> -user=<user> -pass=<pass> [-update=true]\n", filepath.Base(os.Args[0]))
 	}
 
 	chkUpdate(update)
