@@ -96,7 +96,6 @@ func mktReboot() {
 
 	defer session.Close()
 	os.Exit(0)
-
 }
 
 func updFirmware() {
@@ -145,7 +144,6 @@ func chkUpdate(update *bool) {
 	if !strings.Contains(string(xout), "status: New version is available") {
 		fmt.Println("There is no new mikrotik firmware version for update... ")
 	}
-
 }
 
 func main() {
