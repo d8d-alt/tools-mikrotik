@@ -1,12 +1,15 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -22,7 +25,6 @@ var (
 func conSSHserv() (session *ssh.Session) {
 
 	flag.Parse()
-
 	config := &ssh.ClientConfig{
 		User: *userName,
 		Auth: []ssh.AuthMethod{
@@ -55,6 +57,59 @@ func stUpdate() {
 	}
 
 	defer session.Close()
+	for {
+		if strings.Contains(cHkOnline(), "ROSSSH") {
+			if *update == true {
+				updFirmware()
+			} else {
+				break
+			}
+		}
+		time.Sleep(1 * time.Second)
+	}
+}
+
+func cHkOnline() string {
+	flag.Parse()
+	sshHst := *serverName + ":" + *port
+	
+	conn, err := net.Dial("tcp", sshHst)
+	if err != nil {
+		log.Fatal("Conn error from cHkOnline... " + err.Error())
+	}
+	fmt.Fprintf(conn, "GET / HTTP/1.0\r\n\r\n")
+	status, err := bufio.NewReader(conn).ReadString('\n')
+	if err != nil {
+		log.Fatal("Cannot read new reader from cHkOnline... " + err.Error())
+	}
+	conn.Close()
+	return status
+}
+
+func mktReboot() {
+	session := conSSHserv()
+
+	err := session.Run("/system reboot")
+	if err != nil {
+		log.Fatal("Failed to reboot  " + err.Error())
+	}
+
+	defer session.Close()
+	os.Exit(0)
+
+}
+
+func updFirmware() {
+	time.Sleep(15 * time.Second)
+	session := conSSHserv()
+
+	err := session.Run("/system/routerboard/upgrade")
+	if err != nil {
+		log.Fatal("Failed to update firmware " + err.Error())
+	}
+
+	defer session.Close()
+	mktReboot()
 }
 
 func chkUpdate(update *bool) {
