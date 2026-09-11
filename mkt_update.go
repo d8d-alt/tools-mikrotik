@@ -45,7 +45,7 @@ func conSSHserv() (session *ssh.Session, err error) {
                 time.Sleep(1 * time.Second)
         }
 
-        // var client *ssh.Client
+        var client *ssh.Client
 
         if client, err = ssh.Dial("tcp", addressZ, config); err != nil {
                 fmt.Println("Failed to dial after configured maxAttempts checks: ", err.Error())
