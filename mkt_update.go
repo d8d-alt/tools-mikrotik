@@ -157,7 +157,8 @@ func updFirmware() (err error) {
         }
 
         if err = mktReboot(); err != nil {
-                log.Fatal("Cannot reboot mikrotik " + err.Error())
+                fmt.Println("Cannot reboot mikrotik " + err.Error())
+                return err
         } else {
                 os.Exit(0)
         }
@@ -233,7 +234,8 @@ func chkUpdate() (err error) {
 
                         err = updFirmware()
                         if err != nil {
-                                log.Fatal("There is an error with firmware update... " + err.Error())
+                                fmt.Println("There is an error with firmware update... " + err.Error())
+                                return err
                         }
                 }
         }
