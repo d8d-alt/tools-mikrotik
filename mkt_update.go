@@ -47,16 +47,14 @@ func (c *SshCred) sshClient() (err error) {
 
 	c.addressZ = net.JoinHostPort(*serverName, *port)
 
-	var client *ssh.Client
 	for i := 1; i <= *maxAttempts; i++ {
-		client, err = ssh.Dial("tcp", c.addressZ, config)
+		c.client, err = ssh.Dial("tcp", c.addressZ, config)
 		if err == nil {
 			break
 		}
 		time.Sleep(1 * time.Second)
 		fmt.Printf("attemts to connect %d from max attempts %d\n", i, *maxAttempts)
 	}
-	c.client = client
 
 	return err
 }
