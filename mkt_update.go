@@ -53,6 +53,7 @@ func (c *SshCred) sshClient() (err error) {
 			break
 		} else {
 			if strings.Contains(string(err.Error()), "unable to authenticate") {
+				fmt.Println("it seems there is an issue with credentials")
 				return err
 			}
 		}
