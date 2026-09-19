@@ -57,6 +57,7 @@ func (c *SshCred) sshClient() (err error) {
 		fmt.Printf("attemts to connect %d from max attempts %d\n", i, *maxAttempts)
 	}
 	c.client = client
+
 	return err
 }
 
@@ -84,6 +85,7 @@ func (c *SshCred) sshExec(comm string) (execOut []byte, err error) {
 				c.client.Close()
 				return nil, err
 			}
+
 			break
 		}
 		time.Sleep(1 * time.Second)
@@ -92,11 +94,11 @@ func (c *SshCred) sshExec(comm string) (execOut []byte, err error) {
 			return nil, err
 		}
 	}
+
 	return execOut, nil
 }
 
 func (c *SshCred) valueAfter(line, key string) (string, bool) {
-	
 	value, ok := strings.CutPrefix(strings.TrimSpace(line), key)
 	if !ok {
 		return "", false
@@ -105,7 +107,7 @@ func (c *SshCred) valueAfter(line, key string) (string, bool) {
 }
 
 func (c *SshCred) getPacketsVersInfo() (needsUpdate bool, err error) {
-	
+
 	pVers, err := c.sshExec("/system/package/update/check-for-update")
 	if err != nil {
 		fmt.Println("There is an error to get Packets vers... " + err.Error())
@@ -120,11 +122,12 @@ func (c *SshCred) getPacketsVersInfo() (needsUpdate bool, err error) {
 			c.versMkt.latestPacketVers = value
 		}
 	}
+
 	return c.versMkt.currentPacketVers != c.versMkt.latestPacketVers, nil
 }
 
 func (c *SshCred) getFirmwareVersInfo() (needsUpdate bool, err error) {
-	
+
 	fVers, err := c.sshExec("/system routerboard print")
 	if err != nil {
 		fmt.Println("There is an error to get Firmware vers ... " + err.Error())
@@ -139,18 +142,34 @@ func (c *SshCred) getFirmwareVersInfo() (needsUpdate bool, err error) {
 			c.versMkt.latestFirmwareVers = value
 		}
 	}
-	return c.versMkt.currFirmwareVers != c.versMkt.latestPacketVers, nil
+
+	return c.versMkt.currFirmwareVers != c.versMkt.latestFirmwareVers, nil
 }
 
 func (c *SshCred) performUpdate(update *bool) error {
-	
 	// packets update part
 	pVer, err := c.getPacketsVersInfo()
 	if err != nil {
 		fmt.Println("Cannot perform packet versions check ... " + err.Error())
 		return err
 	}
-	fmt.Printf("it needs to update packets from %s to %s : %v\n", c.versMkt.currentPacketVers, c.versMkt.latestPacketVers, pVer)
+
+	if !pVer {
+		fmt.Println("There is no new packets/firmware version for update")
+		return nil
+	} else {
+		fmt.Printf("it needs to update packets from %s to %s : %v\n", c.versMkt.currentPacketVers, c.versMkt.latestPacketVers, pVer)
+
+		if *update {
+			if _, err = c.sshExec("/system/package/update/install"); err != nil {
+				fmt.Println("Cannot perform package install from performUpdate func... " + err.Error())
+				return err
+			}
+
+		}
+	}
+
+	// firmware update part
 
 	fVer, err := c.getFirmwareVersInfo()
 	if err != nil {
@@ -158,17 +177,8 @@ func (c *SshCred) performUpdate(update *bool) error {
 		return err
 	}
 
-	if pVer == true && *update == true {
-		if _, err = c.sshExec("/system/package/update/install"); err != nil {
-			fmt.Println("Cannot perform package install from performUpdate func... " + err.Error())
-			return err
-		}
-	}
-
-	// firmware update part
-
-	fmt.Println("update firmware :", fVer)
-	if fVer == true && *update == true {
+	fmt.Printf("it needs to update firmware from %s to %s : %v\n :", c.versMkt.currFirmwareVers, c.versMkt.latestFirmwareVers, fVer)
+	if fVer && *update {
 		// sleep for a while till ping stop working on mikrotik reboot from packets update
 		time.Sleep(5 * time.Second)
 		if _, err = c.sshExec("/system/routerboard/upgrade"); err != nil {
@@ -180,19 +190,21 @@ func (c *SshCred) performUpdate(update *bool) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
 func main() {
-	
 	flag.Parse()
 	if *serverName == "" || *port == "" || *userName == "" || *passWord == "" {
 		log.Fatalf("usage: %s -ip=<ip> -port=<port> -user=<user> -pass=<pass> [-update=true]\n", filepath.Base(os.Args[0]))
 	}
-	
+
 	var c SshCred
+
 	err := c.performUpdate(update)
 	if err != nil {
 		fmt.Println("Cannot perform Update because of... " + err.Error())
+
 	}
 }
