@@ -51,6 +51,10 @@ func (c *SshCred) sshClient() (err error) {
 		c.client, err = ssh.Dial("tcp", c.addressZ, config)
 		if err == nil {
 			break
+		} else {
+			if strings.Contains(string(err.Error()), "unable to authenticate") {
+				return err
+			}
 		}
 		time.Sleep(1 * time.Second)
 		fmt.Printf("attemts to connect %d from max attempts %d\n", i, *maxAttempts)
