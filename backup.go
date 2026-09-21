@@ -142,7 +142,7 @@ func (c *SshCred) exportConf() error {
 		return err
 	}
 
-	return err
+	return nil
 }
 
 func (c *SshCred) bckCopy(sPath, dPath string) error {
