@@ -24,7 +24,6 @@ var (
 )
 
 type SshCred struct {
-	addressZ string
 	client   *ssh.Client
 	hostName string
 	fileTo   string
@@ -41,10 +40,8 @@ func (c *SshCred) sshClient() (err error) {
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
-	c.addressZ = net.JoinHostPort(*serverName, *port)
-
 	for i := 1; i <= *maxAttempts; i++ {
-		c.client, err = ssh.Dial("tcp", c.addressZ, config)
+		c.client, err = ssh.Dial("tcp", net.JoinHostPort(*serverName, *port), config)
 		if err == nil {
 			break
 		} else {
@@ -53,11 +50,15 @@ func (c *SshCred) sshClient() (err error) {
 				return err
 			}
 		}
-		time.Sleep(1 * time.Second)
+		sleepTimeOne()
 		fmt.Printf("attemts to connect %d from max attempts %d\n", i, *maxAttempts)
 	}
 
 	return err
+}
+
+func sleepTimeOne() {
+	time.Sleep(1 * time.Second)
 }
 
 func (c *SshCred) sshExec(comm string) (execOut []byte, err error) {
@@ -82,7 +83,7 @@ func (c *SshCred) sshExec(comm string) (execOut []byte, err error) {
 
 			break
 		}
-		time.Sleep(1 * time.Second)
+		sleepTimeOne()
 		if i == *maxAttempts {
 			fmt.Printf("Reached max attemtps %d\n", *maxAttempts)
 			return nil, err
