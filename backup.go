@@ -19,6 +19,7 @@ var (
 	port        = flag.String("port", "", "Port")
 	userName    = flag.String("user", "", "User Name")
 	passWord    = flag.String("pass", "", "Password")
+	dPath       = flag.String("path", "", "path to store files")
 	maxAttempts = flag.Int("attemtps", 60, "max attemtps")
 )
 
@@ -70,7 +71,6 @@ func (c *SshCred) sshExec(comm string) (execOut []byte, err error) {
 
 		session, err = c.client.NewSession()
 		if err == nil {
-      
 			defer session.Close()
 
 			execOut, err = session.CombinedOutput(comm)
@@ -95,7 +95,7 @@ func (c *SshCred) sshExec(comm string) (execOut []byte, err error) {
 func (c *SshCred) mktGetName() (mktName string, err error) {
 	gName, err := c.sshExec("/system/identity/export compact")
 	if err != nil {
-		fmt.Printf("Failed to execute cmd fot Output... " + err.Error())
+		fmt.Println("Failed to execute cmd fot Output... " + err.Error())
 		return "", err
 	}
 
@@ -185,12 +185,12 @@ func (c *SshCred) bckCopy(sPath, dPath string) error {
 
 func main() {
 	flag.Parse()
-	if len(os.Args) != 5 {
-		log.Fatal("Error! Expected 4 arguments only! Exam: " + filepath.Base(os.Args[0]) + " -ip=192.168.253.1 -port=22 -user=username -pass=password")
+	if len(os.Args) != 6 {
+		log.Fatal("Error! Expected 5 arguments only! Exam: " + filepath.Base(os.Args[0]) + " -ip=192.168.253.1 -port=22 -user=username -pass=password -path=$PATH")
 	}
 
-	if *serverName == "" || *port == "" || *userName == "" || *passWord == "" {
-		log.Fatal("Error! All flags required: -ip, -port, -user, -pass")
+	if *serverName == "" || *port == "" || *userName == "" || *passWord == "" || *dPath == "" {
+		log.Fatal("Error! All flags required: -ip, -port, -user, -pass, -path ")
 	}
 
 	var c SshCred
@@ -198,24 +198,26 @@ func main() {
 
 	c.hostName, err = c.mktGetName()
 	if err != nil {
-		log.Fatalf("Cannot perform Update because of... " + err.Error())
+		log.Fatal("Cannot perform Update because of... " + err.Error())
 	}
 
 	if err = c.backupConf(); err != nil {
-		log.Fatalf("Cannot save backup file localy in mikrotik... " + err.Error())
+		log.Fatal("Cannot save backup file localy in mikrotik... " + err.Error())
 	}
 
 	if err = c.exportConf(); err != nil {
-		log.Fatalf("Cannot save backup file localy in mikrotik... " + err.Error())
+		log.Fatal("Cannot save backup file localy in mikrotik... " + err.Error())
 	}
 
 	c.fileBckp = c.fileBckp + ".rsc"
 	c.fileTo = c.fileTo + ".backup"
 
+	pathSeparator := string(os.PathSeparator)
 	files := []string{c.fileBckp, c.fileTo}
 
 	for _, file := range files {
-		c.bckCopy(file, file)
-		fmt.Printf("File : %s has been copied locally\n", file)
+		bFile := *dPath + pathSeparator + file
+		c.bckCopy(file, bFile)
+		fmt.Printf("File : %s has been copied locally in %s\n", file, *dPath)
 	}
 }
